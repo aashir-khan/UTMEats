@@ -1,0 +1,5 @@
+*.DS_Store
+./client/android/app/google-services.json
+./server/.vscode/
+./.vscode
+launch.json

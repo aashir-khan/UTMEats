@@ -1,0 +1,25 @@
+{
+    "id": "tr_1E2wlEJzUTWpnu9KpMJzxcfX",
+    "object": "transfer",
+    "amount": 1100,
+    "amount_reversed": 0,
+    "balance_transaction": "txn_1E1n0KJzUTWpnu9KgtV61U3O",
+    "created": 1549960620,
+    "currency": "cad",
+    "description": null,
+    "destination": "acct_18lp88JzUTWpnu9K",
+    "destination_payment": "py_EVyiZzJapU65Hz",
+    "livemode": false,
+    "metadata": {},
+    "reversals": {
+        "object": "list",
+        "data": [],
+        "has_more": false,
+        "total_count": 0,
+        "url": "/v1/transfers/tr_1E2wlEJzUTWpnu9KpMJzxcfX/reversals"
+    },
+    "reversed": false,
+    "source_transaction": null,
+    "source_type": "card",
+    "transfer_group": null
+}
