@@ -59,7 +59,6 @@ ios/Pods
 ios/Podfile.lock
 ios/Podfile
 
-android/app/src/
 .vscode/
 android/.project
 android/app/.classpath
