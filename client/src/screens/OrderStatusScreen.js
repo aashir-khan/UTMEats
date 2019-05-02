@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { CardSection } from '../components/common';
-import axios from 'axios';
-import { Rating, Button, Overlay, Icon } from 'react-native-elements';
-import Communications from 'react-native-communications';
+import React from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { CardSection } from "../components/common";
+import axios from "axios";
+import { Rating, Button, Overlay, Icon } from "react-native-elements";
+import Communications from "react-native-communications";
 
-import Order from '../components/Order';
+import Order from "../components/Order";
 
 // show order info for a single order
 
@@ -17,14 +17,14 @@ export default class OrderStatusScreen extends React.Component {
       status: props.navigation.state.params.status,
       ETA: props.navigation.state.params.ETA,
       rating: props.navigation.state.params.orderRating, //will be -1 if no review,
-      carrierId: '',
-      carrierPhone: '9999999999',
+      carrierId: "",
+      carrierPhone: "9999999999",
       isVisible: false
     };
   }
 
   static navigationOptions = {
-    title: 'Order Status'
+    title: "Order Status"
   };
 
   getOrderStatusETAAndRating() {
@@ -33,7 +33,10 @@ export default class OrderStatusScreen extends React.Component {
 
     // get the latest status of the order
     axios
-      .get('https://utmeats.herokuapp.com/order/getOrderStatusEtaAndRating?orderId=' + orderId)
+      .get(
+        "https://utmeats.herokuapp.com/order/getOrderStatusEtaAndRating?orderId=" +
+          orderId
+      )
       .then(response => {
         if (response.data.orderRating) {
           this.setState({
@@ -59,13 +62,16 @@ export default class OrderStatusScreen extends React.Component {
     const orderId = orderDetails.id;
     //call function every n/1000 seconds
     axios
-      .get('https://utmeats.herokuapp.com/order/getOrder?orderId=' + orderId)
+      .get("https://utmeats.herokuapp.com/order/getOrder?orderId=" + orderId)
       .then(response => {
         this.setState({
           carrierId: response.data.carrierId
         });
         axios
-          .get('https://utmeats.herokuapp.com/user/getUser?userId=' + this.state.carrierId)
+          .get(
+            "https://utmeats.herokuapp.com/user/getUser?userId=" +
+              this.state.carrierId
+          )
           .then(response => {
             this.setState({
               carrierPhone: response.data.phoneNumber
@@ -80,7 +86,10 @@ export default class OrderStatusScreen extends React.Component {
         console.log(error);
       });
 
-    this.intervalId = setInterval(this.getOrderStatusETAAndRating.bind(this), 5000);
+    this.intervalId = setInterval(
+      this.getOrderStatusETAAndRating.bind(this),
+      5000
+    );
   }
 
   componentWillUnmount() {
@@ -91,29 +100,52 @@ export default class OrderStatusScreen extends React.Component {
   renderRating(id) {
     const { navigate } = this.props.navigation;
 
-    if (this.state.rating != -1) {
+    if (this.state.rating == -1  && this.state.status == "completed") {
+      //this order hasn't been reviewed yet. (ie no rating set)
+      //only want users to review once an order has been completed
       return (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Button
+          title="Rate"
+          onPress={() => navigate("Rate", { orderId: id })}
+        />
+      );
+    } else if (this.state.rating != -1) {
+      return (
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text>Rating </Text>
-          <Rating imageSize={20} readonly startingValue={this.state.rating * 5} />
+          <Rating
+            imageSize={20}
+            readonly
+            startingValue={this.state.rating * 5}
+          />
         </View>
       );
     }
 
-    //this order hasn't been reviewed yet. (ie no rating set)
-    return <Button title="Rate" onPress={() => navigate('Rate', { orderId: id })} />;
+    //none of the cases matched to return empty view
+    return <View />;
   }
 
-  render() {
-    const orderDetails = this.props.navigation.state.params;
-    const costDetails = orderDetails.costs;
+  renderContactCarrierView() {
+    /*don't want customer contacting carrier after order has been completed or 
+    hasn't been accepted by a carrier*/
+
+    if (this.state.status == "completed" || this.state.status == "received") {
+      return <View />; //return empty view
+    }
 
     return (
-      <View style={styles.container}>
+      <View>
+        <TouchableOpacity onPress={() => this.setState({ isVisible: true })}>
+          <View style={styles.holder}>
+            <Text style={{ color: "blue" }}>Contact Carrier</Text>
+          </View>
+        </TouchableOpacity>
         <Overlay
           isVisible={this.state.isVisible}
           onBackdropPress={() => this.setState({ isVisible: false })}
-          height={100}>
+          height={100}
+        >
           <View>
             <Button
               type="clear"
@@ -136,7 +168,16 @@ export default class OrderStatusScreen extends React.Component {
             />
           </View>
         </Overlay>
+      </View>
+    );
+  }
 
+  render() {
+    const orderDetails = this.props.navigation.state.params;
+    const costDetails = orderDetails.costs;
+
+    return (
+      <View style={styles.container}>
         <CardSection>
           <View style={styles.groupOneContainer}>
             <View>
@@ -146,15 +187,14 @@ export default class OrderStatusScreen extends React.Component {
 
               {this.renderRating(orderDetails.id)}
 
-              <TouchableOpacity onPress={() => this.setState({ isVisible: true })}>
-                <View style={styles.holder}>
-                  <Text style={{ color: 'blue' }}>Contact Carrier</Text>
-                </View>
-              </TouchableOpacity>
+              {this.renderContactCarrierView()}
             </View>
 
             <View style={styles.imageContainer}>
-              <Image style={styles.image} source={{ uri: orderDetails.restaurant.thumbnail }} />
+              <Image
+                style={styles.image}
+                source={{ uri: orderDetails.restaurant.thumbnail }}
+              />
             </View>
           </View>
         </CardSection>
@@ -168,20 +208,20 @@ export default class OrderStatusScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-around',
+    flexDirection: "column",
+    justifyContent: "space-around",
     margin: 8
   },
 
   heading: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'left'
+    fontWeight: "bold",
+    textAlign: "left"
   },
 
   groupOneContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     flex: 1
   },
 
@@ -190,10 +230,10 @@ const styles = StyleSheet.create({
     height: 60
   },
   imageContainer: {
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    justifyContent: "flex-end",
+    alignItems: "center",
 
     flex: 1,
-    flexDirection: 'row'
+    flexDirection: "row"
   }
 });

@@ -1,11 +1,6 @@
-import React, { Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  SectionList,
-} from "react-native";
-import MenuListItem from "./MenuListItem";
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, SectionList } from 'react-native';
+import MenuListItem from './MenuListItem';
 
 export default class MenuList extends React.Component {
   getListOfItemNameDescriptionPrice = singleCategoryItems => {
@@ -25,9 +20,7 @@ export default class MenuList extends React.Component {
     let ret = [];
     menuCategoriesAndItems.forEach(singleCategoryAndItems => {
       const title = singleCategoryAndItems.categoryName;
-      const dataForTitle = this.getListOfItemNameDescriptionPrice(
-        singleCategoryAndItems.items
-      );
+      const dataForTitle = this.getListOfItemNameDescriptionPrice(singleCategoryAndItems.items);
       ret.push({ title: title, data: dataForTitle });
     });
     return ret;
@@ -42,8 +35,13 @@ export default class MenuList extends React.Component {
       <View>
         <SectionList
           sections={dataForSectionList}
-          renderItem={({ item }) => (
-            <MenuListItem navigation={this.props.navigation} itemSelected={item.entireItem}/>
+          renderItem={({ item, index }) => (
+            <MenuListItem
+              restaurantId={this.props.restaurantId}
+              navigation={this.props.navigation}
+              itemSelected={item.entireItem}
+              index={index}
+            />
           )}
           renderSectionHeader={({ section }) => (
             <View style={styles.sectionHeader}>
@@ -60,15 +58,15 @@ export default class MenuList extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff"
+    backgroundColor: '#fff'
   },
   row: {
     paddingHorizontal: 20,
     paddingVertical: 10
   },
   sectionHeader: {
-    backgroundColor: "#00b4fc",
-    paddingHorizontal: 20,
-    paddingVertical: 10
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    paddingHorizontal: 25,
+    paddingVertical: 15
   }
 });

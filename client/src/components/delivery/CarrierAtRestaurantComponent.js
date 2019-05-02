@@ -1,22 +1,31 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { CardSection } from '../common';
-import axios from 'axios';
+import React, { Component } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity
+} from "react-native";
+import { Button, ThemeProvider } from "react-native-elements";
+import { CardSection } from "../common";
+import axios from "axios";
 
-import Order from '../Order';
-import OrderMenuItem from '../OrderMenuItem';
-import Communications from 'react-native-communications';
+import Order from "../Order";
+import OrderMenuItem from "../OrderMenuItem";
+import Communications from "react-native-communications";
+
+import theme from "../../theme/Theme";
 
 export default class CarrierAtRestaurantComponent extends Component {
   pickedUpFood = async () => {
     const { orderId, updateDeliveryProcessStatus } = this.props;
 
     try {
-      await axios.put('https://utmeats.herokuapp.com/order/updateOrderStatus', {
+      await axios.put("https://utmeats.herokuapp.com/order/updateOrderStatus", {
         orderId: orderId,
-        newStatus: 'picked up food'
+        newStatus: "picked up food"
       });
-      updateDeliveryProcessStatus('picked up food');
+      updateDeliveryProcessStatus("picked up food");
     } catch (err) {
       console.log(err);
       return;
@@ -32,31 +41,38 @@ export default class CarrierAtRestaurantComponent extends Component {
     const costDetails = orderDetails.costs;
 
     return (
-      <View style={styles.container}>
-        <ScrollView>
-          <CardSection>
+      <ThemeProvider theme={theme}>
+        <View style={theme.container}>
+          <ScrollView>
             <View>
               <Text style={styles.heading}>{restaurantDetails.name}</Text>
-              <TouchableOpacity onPress={() => Communications.phonecall(customerDetails.phoneNumber, true)}>
-                <View>
-                  <Text>Call Customer</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => Communications.text(customerDetails.phoneNumber)}>
-                <View>
-                  <Text>Text Customer</Text>
-                </View>
-              </TouchableOpacity>
+              <Button
+                title="Call Customer"
+                buttonStyle={{ backgroundColor: "rgb(80,80,80)" }}
+                onPress={() =>
+                  Communications.phonecall(customerDetails.phoneNumber, true)
+                }
+              />
+              <Button
+                title="Text Customer"
+                buttonStyle={{ backgroundColor: "rgb(80,80,80)" }}
+                onPress={() => Communications.text(customerDetails.phoneNumber)}
+              />
             </View>
-          </CardSection>
 
-          <Order itemsOrdered={orderDetails.items} costDetails={costDetails} />
+            <Order
+              itemsOrdered={orderDetails.items}
+              costDetails={costDetails}
+            />
 
-          <TouchableOpacity style={styles.submitButton} onPress={this.pickedUpFood}>
-            <Text style={styles.submitButtonText}>Picked Up Food</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
+            <Button
+              title="Picked Up Food"
+              onPress={this.pickedUpFood}
+              buttonStyle={{ backgroundColor: "#27ae60" }}
+            />
+          </ScrollView>
+        </View>
+      </ThemeProvider>
     );
   }
 }
@@ -64,23 +80,23 @@ export default class CarrierAtRestaurantComponent extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-around'
+    flexDirection: "column",
+    justifyContent: "space-around"
   },
 
   heading: {
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'left'
+    fontWeight: "bold",
+    textAlign: "left"
   },
 
   submitButton: {
-    backgroundColor: '#7a42f4',
+    backgroundColor: "#7a42f4",
     padding: 10,
     margin: 15,
     height: 40
   },
   submitButtonText: {
-    color: 'white'
+    color: "white"
   }
 });

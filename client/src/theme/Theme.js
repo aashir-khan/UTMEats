@@ -37,11 +37,16 @@ const button = {
     borderWidth: 0.5,
     marginTop: 15,
     padding: 15
+  },
+  titleStyle: {
+    marginLeft: 5
   }
 };
 
-const keyboardAwareScrollView = {
-  backgroundColor: colors.background
+const container = {
+  backgroundColor: colors.background,
+  padding: 50,
+  paddingTop: 20
 };
 
 const header = {
@@ -56,8 +61,8 @@ const header = {
 };
 
 const tabBarOptions = {
-  inactiveTintColor: 'rgba(255,255,255,0.3)',
-  activeTintColor: 'rgba(255,255,255,0.9)',
+  inactiveTintColor: 'rgba(0,0,0,0.3)',
+  activeTintColor: colors.primary,
   labelStyle: {
     fontSize: 12
   },
@@ -65,19 +70,94 @@ const tabBarOptions = {
     width: 30,
     height: 30
   },
-  style: {
-    backgroundColor: colors.primary,
-    height: 70,
-    padding: 10
+  tabStyle: {
+    borderRightColor: 'rgb(240,240,240)',
+    borderRightWidth: 1,
+    borderLeftColor: 'rgb(240,240,240)',
+    borderLeftWidth: 1
   },
-  showLabel: false,
+  style: {
+    backgroundColor: colors.background,
+    height: 70
+  },
+  showLabel: false
+};
+
+const datePicker = {
+  width: 170,
+  padding: 10,
+  borderRadius: 20,
+  borderWidth: 1,
+  borderBottomWidth: 1,
+  borderTopWidth: 1,
+  borderColor: 'rgba(0,0,0,.1)',
+  shadowColor: 'rgba(0,0,0,0)'
+};
+
+const datePickerCustom = {
+  dateInput: {
+    borderColor: 'rgba(0,0,0,0)',
+    shadowColor: 'rgba(0,0,0,0)',
+    alignItems: 'flex-start'
+  },
+  dateText: {
+    fontSize: 16,
+    marginLeft: 5,
+    color: 'rgba(0,0,0,1)'
+  },
+  placeholderText: {
+    fontSize: 16,
+    marginLeft: 5,
+    color: 'rgba(0,0,0,0.35)'
+  }
+};
+
+const themeProvider = {};
+
+const icon = {
+  margin: 5
+};
+
+const buttonIcon = {
+  marginRight: 10,
+  marginLeft: 10
+};
+
+const divider = {
+  backgroundColor: 'rgba(0,0,0,0.2)',
+  marginTop: 10
+};
+
+const listItem = {
+  titleStyle: { fontSize: 18, fontWeight: 'bold' },
+  leftAvatar: {
+    rounded: false,
+    size: 'large',
+    style: {
+      width: 80,
+      height: 80,
+      backgroundColor: 'rgba(0,0,0,0)'
+    },
+    overlayContainerStyle: {
+      backgroundColor: 'rgba(0,0,0,0)'
+    },
+    avatarStyle: {
+      borderRadius: 15
+    }
+  }
 };
 
 export default {
   colors: colors,
+  container: container,
+  datePicker: datePicker,
+  datePickerCustom: datePickerCustom,
   Input: input,
   Button: button,
-  KeyboardAwareScrollView: keyboardAwareScrollView,
   Header: header,
-  TabBarOptions: tabBarOptions
+  TabBarOptions: tabBarOptions,
+  ThemeProvider: themeProvider,
+  Divider: divider,
+  Icon: icon,
+  ListItem: listItem
 };

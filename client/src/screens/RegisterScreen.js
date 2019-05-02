@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
-import { View, Text, Alert } from 'react-native';
-import { ThemeProvider, Input, Button } from 'react-native-elements';
-import DatePicker from 'react-native-datepicker';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import theme from '../theme/Theme';
+import React, { Component } from "react";
+import { View, Text, Alert } from "react-native";
+import { ThemeProvider, Input, Button } from "react-native-elements";
+import DatePicker from "react-native-datepicker";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import theme from "../theme/Theme";
 
-import axios from 'axios';
-import firebase from '@firebase/app';
-import '@firebase/auth';
+import axios from "axios";
+import firebase from "@firebase/app";
+import "@firebase/auth";
 
 export default class RegisterScreen extends Component {
   //title for the window
   static navigationOptions = {
-    title: 'Register',
+    title: "Register",
     headerTitleStyle: theme.Header.headerTitleStyle,
     headerTintColor: theme.Header.headerTintColor,
     headerStyle: theme.Header.headerStyle
@@ -21,13 +21,13 @@ export default class RegisterScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: '1955-05-05',
-      lastName: '',
-      firstName: '',
-      email: '',
-      password: '',
-      phoneNumber: '',
-      errors: ''
+      date: "1955-05-05",
+      lastName: "",
+      firstName: "",
+      email: "",
+      password: "",
+      phoneNumber: "",
+      errors: ""
     };
   }
 
@@ -47,15 +47,15 @@ export default class RegisterScreen extends Component {
     //add to firebase through our custom backend
     try {
       const result = await axios.post(
-        'https://utmeats.herokuapp.com/user/onRegisterAddDetails',
+        "https://utmeats.herokuapp.com/user/onRegisterAddDetails",
         data
       );
 
       if (result.request.status === 500) {
-        Alert.alert('Failed to make an account');
+        Alert.alert("Failed to make an account");
       } else {
         const { navigate } = this.props.navigation;
-        navigate('Main', {});
+        navigate("Main", {});
       }
     } catch (error) {
       console.log(error);
@@ -65,7 +65,7 @@ export default class RegisterScreen extends Component {
   //called when user already has account
   onLoginSuccess() {
     const { navigate } = this.props.navigation;
-    navigate('Main', {});
+    navigate("Main", {});
   }
 
   //on Failure
@@ -83,18 +83,18 @@ export default class RegisterScreen extends Component {
     //https://www.w3resource.com/javascript/form/email-validation.php
     if (
       !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.trim()) || //email not valid
-      firstName.trim() == '' ||
-      lastName.trim() == '' ||
-      password.trim() == '' ||
-      phoneNumber.trim() == ''
+      firstName.trim() == "" ||
+      lastName.trim() == "" ||
+      password.trim() == "" ||
+      phoneNumber.trim() == ""
     ) {
-      this.state.error = 'Invalid Entries';
+      this.state.error = "Invalid Entries";
 
       // Works on both iOS and Android
       Alert.alert(
-        'Invalid Entries',
-        'Please fill in all the details correctly.',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+        "Invalid Entries",
+        "Please fill in all the details correctly.",
+        [{ text: "OK", onPress: () => console.log("OK Pressed") }],
         { cancelable: false }
       );
       return; //stop from going further
@@ -109,8 +109,8 @@ export default class RegisterScreen extends Component {
       .catch(error => {
         let errorCode = error.code;
         let errorMessage = error.message;
-        if (errorCode == 'auth/weak-password') {
-          this.onLoginFailure.bind(this)('Weak password!');
+        if (errorCode == "auth/weak-password") {
+          this.onLoginFailure.bind(this)("Weak password!");
         } else {
           this.onLoginFailure.bind(this)(errorMessage);
         }
@@ -156,22 +156,17 @@ export default class RegisterScreen extends Component {
             <Input
               label="Phone Number"
               placeholder="Phone Number"
-              keyboardType={'phone-pad'}
+              keyboardType={"phone-pad"}
               value={this.state.phoneNumber}
               onChangeText={phoneNumber => this.setState({ phoneNumber })}
             />
 
             <Input
               label="Date of Birth"
-              placeholder=""
-              inputContainerStyle={{ display: 'none' }}
-              secureTextEntry={true}
-              value={this.state.password}
-              onChangeText={password => this.setState({ password })}
+              inputContainerStyle={{ display: "none" }}
             />
 
             <DatePicker
-              style={styles.datePicker}
               date={this.state.date}
               mode="date"
               androidMode="spinner"
@@ -180,24 +175,9 @@ export default class RegisterScreen extends Component {
               minDate="1900-01-01"
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
-              customStyles={{
-                dateInput: {
-                  borderColor: 'rgba(0,0,0,0)',
-                  shadowColor: 'rgba(0,0,0,0)',
-                  alignItems: 'flex-start'
-                },
-                dateText: {
-                  fontSize: 16,
-                  marginLeft: 5,
-                  color: 'rgba(0,0,0,0.35)'
-                },
-                placeholderText: {
-                  fontSize: 16,
-                  marginLeft: 5,
-                  color: 'rgba(0,0,0,0.35)'
-                }
-              }}
               showIcon={true}
+              style={theme.datePicker}
+              customStyles={theme.datePickerCustom}
               onDateChange={date => this.setState({ date })}
             />
 
@@ -227,7 +207,7 @@ const styles = {
     borderWidth: 1,
     borderBottomWidth: 1,
     borderTopWidth: 1,
-    borderColor: 'rgba(0,0,0,.1)',
-    shadowColor: 'rgba(0,0,0,0)'
+    borderColor: "rgba(0,0,0,.1)",
+    shadowColor: "rgba(0,0,0,0)"
   }
 };

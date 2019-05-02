@@ -6,7 +6,7 @@ import RestaurantsStackNavigator from './RestaurantsStackNavigator';
 import DeliveryStackNavigator from './DeliveryStackNavigator';
 import OrdersStackNavigator from './OrdersStackNavigator';
 import ProfileStackNavigator from './ProfileStackNavigator';
-import CartScreen from '../screens/CartScreen';
+
 import theme from '../theme/Theme';
 
 export default createBottomTabNavigator(
@@ -33,15 +33,8 @@ export default createBottomTabNavigator(
         };
       }
     },
-    Cart: {
-      screen: CartScreen,
-      navigationOptions: {
-        title: 'Shopping Cart',
-        tabBarLabel: 'Cart',
-        tabBarIcon: ({ tintColor }) => <Icon name="md-cart" color={tintColor} type="ionicon" />,
-        tabBarOptions: theme.TabBarOptions
-      }
-    },
+
+    
     Deliver: {
       screen: DeliveryStackNavigator,
       navigationOptions: {

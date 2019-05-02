@@ -69,6 +69,3 @@ ios/client/Info.plist
 
 
 package-lock.json
-
-# environment related
-env/

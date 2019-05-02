@@ -2,11 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import firebase from '@firebase/app';
 import '@firebase/auth';
-import {
-  Button,
-  ThemeProvider,
-  Icon
-} from 'react-native-elements';
+import { Button, ThemeProvider, Icon } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import theme from '../theme/Theme';
 
@@ -23,10 +19,9 @@ export default class ProfileScreen extends React.Component {
     return (
       <ThemeProvider theme={theme}>
         <KeyboardAwareScrollView>
-          <View style={styles.container}>
+          <View style={theme.container}>
             <Button
               title="Account"
-              titleStyle={{ marginLeft: 5 }}
               type="clear"
               icon={<Icon name="md-person" type="ionicon" />}
               onPress={() => navigate('AccountSettings')}
@@ -34,7 +29,6 @@ export default class ProfileScreen extends React.Component {
 
             <Button
               title="Payment"
-              titleStyle={{ marginLeft: 5 }}
               type="clear"
               icon={<Icon name="payment" type="material" />}
               onPress={() => navigate('Payment')}
@@ -42,7 +36,6 @@ export default class ProfileScreen extends React.Component {
 
             <Button
               title="Policy"
-              titleStyle={{ marginLeft: 5 }}
               type="clear"
               icon={<Icon name="infocirlceo" type="antdesign" />}
               onPress={() => navigate('Policy')}
@@ -50,7 +43,6 @@ export default class ProfileScreen extends React.Component {
 
             <Button
               title="Logout"
-              titleStyle={{ marginLeft: 5 }}
               type="clear"
               icon={<Icon name="logout" type="antdesign" />}
               onPress={() => firebase.auth().signOut()}
@@ -61,10 +53,3 @@ export default class ProfileScreen extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 50,
-    paddingTop: 20
-  }
-});

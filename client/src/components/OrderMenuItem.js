@@ -11,8 +11,10 @@ export default class OrderMenuItem extends React.Component {
   render() {
     const item = this.props.menuItem;
 
-    //remove any null selections
-    const sections = item.itemSections.filter(el => {
+    console.log(item);
+
+      //remove any null sections (the sections that user didn't pick anything for)
+      const sections = item.itemSections.filter(el => {
       return el != null;
     });
 
@@ -29,23 +31,39 @@ export default class OrderMenuItem extends React.Component {
 
           <FlatList
             data={sections}
-            renderItem={({ item }) => (
-              <View>
-                <Text>{item.sectionName}:</Text>
-                <FlatList
-                  data={item.sectionOptions}
-                  renderItem={({ item }) => (
-                    <SectionSelection selectionItem={item} />
-                  )}
-                  keyExtractor={(_, index) => index.toString()}
-                />
-              </View>
-            )}
+            renderItem={({ item }) => this.renderSection(item)}
             keyExtractor={(_, index) => index.toString()}
           />
         </View>
       </Card>
     );
+  }
+
+  /**
+   * Render a single section.
+   */
+  renderSection(item) {
+    //handle rendering special instructions which doesn't have sectionOptions, but rather just text
+    if (item.sectionName == "Special Instructions") {
+      return (
+        <View>
+          <Text>{item.sectionName}:</Text>
+          <Text style={styles.selectionText}>{item.text}</Text>
+        </View>
+      );
+    } else {
+      //render a section and its list of selections
+      return (
+        <View>
+          <Text>{item.sectionName}:</Text>
+          <FlatList
+            data={item.sectionOptions}
+            renderItem={({ item }) => <SectionSelection selectionItem={item} />}
+            keyExtractor={(_, index) => index.toString()}
+          />
+        </View>
+      );
+    }
   }
 }
 
@@ -60,11 +78,8 @@ class SectionSelection extends React.Component {
     if (price == 0) {
       return <Text style={styles.selectionText}>-{name}</Text>;
     } else {
-      return (
-        <Text style={styles.selectionText}>
-          -{name} ${price}
-        </Text>
-      );
+      //name already includes the price
+      return <Text style={styles.selectionText}>-{name}</Text>;
     }
   }
 }

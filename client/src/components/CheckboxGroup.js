@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import CheckboxFormX from "react-native-checkbox-form";
+import React, { Component } from 'react';
+import CheckboxFormX from 'react-native-checkbox-form';
 
 //redux
-import { connect } from "react-redux";
-import { setChoice } from "../actions";
-import { StyleSheet, View } from "react-native";
+import { connect } from 'react-redux';
+import { setChoice } from '../actions';
+import { StyleSheet, View } from 'react-native';
 
 export class CheckboxGroup extends Component {
   constructor(props) {
@@ -62,8 +62,8 @@ export default connect(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "flex-start",
-    alignItems: "flex-start"
+    backgroundColor: '#fff',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start'
   }
 });

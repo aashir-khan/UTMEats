@@ -1,8 +1,24 @@
 import React from "react";
-import { StyleSheet, Text, View, FlatList, Alert, Picker } from "react-native";
-import { Button, ButtonGroup, Input } from "react-native-elements";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Alert,
+  Picker,
+  TouchableOpacity,
+  ScrollView
+} from "react-native";
+import {
+  Button,
+  ButtonGroup,
+  Input,
+  ThemeProvider,
+  Icon
+} from "react-native-elements";
 import firebase from "@firebase/app";
 import { connect } from "react-redux";
+import stripe from "tipsi-stripe";
 
 import "@firebase/auth";
 import axios from "axios";
@@ -10,6 +26,9 @@ import axios from "axios";
 import { resetCart } from "../actions";
 
 import OrderMenuItem from "../components/OrderMenuItem";
+import CostView from "../components/CostView";
+
+import theme from "../theme/Theme";
 
 const FOOD_TAX = 0.13;
 const DELIVERY_TAX = 0.13;
@@ -17,12 +36,16 @@ const DELIVERY = 5;
 
 export class CartScreen extends React.Component {
   static navigationOptions = {
-    title: "Checkout Cart"
+    title: "Checkout",
+    headerTitleStyle: theme.Header.headerTitleStyle,
+    headerTintColor: theme.Header.headerTintColor,
+    headerStyle: theme.Header.headerStyle
   };
 
   constructor(props) {
     super(props);
     this.state = {
+      creditCardInfo: -1,
       food: 0,
       delivery: DELIVERY,
       deliveryTax: DELIVERY * DELIVERY_TAX,
@@ -79,6 +102,8 @@ export class CartScreen extends React.Component {
       }
     };
 
+    const { navigate } = this.props.navigation;
+
     axios
       .get(
         "https://utmeats.herokuapp.com/payment/verifyIsCustomer?userId=" +
@@ -102,12 +127,11 @@ export class CartScreen extends React.Component {
         //order placed successfully
         this.props.resetCart(); //reset the cart
 
-        const { navigate } = this.props.navigation;
-        navigate("RestaurantList", {});
+        navigate("Orders", {});
       })
       .catch(error => {
         Alert.alert("Failed to place an order");
-        navigate("RestaurantList", {});
+        navigate("Orders", {});
       });
   }
 
@@ -119,8 +143,71 @@ export class CartScreen extends React.Component {
     this.setState({ deliveryLocation: buildingName });
   }
 
+  getCardInfo() {
+    axios
+      .get(
+        `https://utmeats.herokuapp.com/payment/getCustomerCards?userId=${
+          this.userId
+        }`
+      )
+      .then(response => {
+        // if (!response.data.card) {
+        //   this.setState({ creditCardInfo: -1 });
+        //   return;
+        // }
+
+        this.setState({
+          creditCardInfo: {
+            brand: response.data.card.brand,
+            last4: response.data.card.last4
+          }
+        });
+      })
+      .catch(error => {
+        console.log("error getting card info ", error);
+      });
+  }
+
+  handlerCreditCard = async () => {
+    // try {
+    //   // this brings up GUI
+    //   const tokenObj = await stripe.paymentRequestWithCardForm();
+    //   const tokenId = tokenObj.tokenId;
+    //   const addCustomerCardResult = await addCustomerCardBackend(
+    //     this.userId,
+    //     tokenId
+    //   );
+    //   if (addCustomerCardResult.status === 200) {
+    //     Alert.alert("Successfully added payment method");
+    //     this.getCardInfo(); // get card info and set it in the state
+    //   }
+    // } catch (error) {
+    //   // don't want to throw error message if user just wanted to cancel dialog box
+    //   if (error.message != "Cancelled by user") {
+    //     console.log(error);
+    //     Alert.alert("There was an error adding the payment method");
+    //   }
+    // }
+    const { navigate } = this.props.navigation;
+    navigate("Payment", {});
+  };
+
+  componentWillUnmount() {
+    this.didFocusListener.remove();
+  }
   componentDidMount() {
-    this.calculateFoodCost();
+    stripe.setOptions({
+      publishableKey: "pk_test_XP7GCtNPXxkITEn7KSxgPfo2"
+    });
+
+    this.didFocusListener = this.props.navigation.addListener(
+      "didFocus",
+      () => {
+        this.getCardInfo(); // get card info and set it in the state
+
+        this.calculateFoodCost();
+      }
+    );
   }
 
   calculateTotalCost() {
@@ -173,6 +260,24 @@ export class CartScreen extends React.Component {
     );
   }
 
+  renderPayment() {
+    //no credit card on file
+    if (this.state.creditCardInfo == -1) {
+      return (
+        <TouchableOpacity onPress={this.handlerCreditCard}>
+          <Text>Tap to add a Credit Card.</Text>
+        </TouchableOpacity>
+      );
+    }
+    //user has a credit card
+    return (
+      <Text>
+        Paying with {this.state.creditCardInfo.brand} ****
+        {this.state.creditCardInfo.last4}{" "}
+      </Text>
+    );
+  }
+
   render() {
     const { navigate } = this.props.navigation;
     const buttons = ["$0", "$2", "$4", "$6"];
@@ -180,58 +285,82 @@ export class CartScreen extends React.Component {
 
     //cart isn't empty
     if (this.props.cart.items.length != 0) {
+      const cost = {
+        food: this.state.food,
+        delivery: this.state.delivery,
+        foodTax: this.state.foodTax,
+        deliveryTax: this.state.deliveryTax,
+        tip: this.state.tip,
+        total: this.state.totalCost
+      };
+
       return (
-        <View style={styles.container}>
-          <BuildingPicker
-            deliveryLocation={this.state.deliveryLocation}
-            clickHandler={this.handleBuildingSelection}
-          />
-
-          <View style={styles.listView}>
-            <FlatList
-              data={this.props.cart.items}
-              renderItem={({ item }) => <OrderMenuItem menuItem={item} />}
-              keyExtractor={(item, index) => index.toString()}
-            />
-
-            <Input
-              onChangeText={this.handlerInstructionsTextBox}
-              placeholder="Special instructions? Room #?"
-              leftIcon={{ type: "font-awesome", name: "chevron-right" }}
-            />
-          </View>
-
-          <View>
-            <ButtonGroup
-              onPress={this.tipBtnGroupHandler}
-              selectedIndex={selectedTipBtnIndex}
-              buttons={buttons}
-              containerStyle={{ height: 50, margin: 20 }}
-            />
-          </View>
-
-          <View style={styles.costContainer}>
-            <Text style={styles.costHeading}>Costs</Text>
+        <ThemeProvider theme={theme}>
+          <ScrollView>
             <View>
-              <Text>Food: ${this.state.food}</Text>
-              <Text>Delivery: ${this.state.delivery}</Text>
-              <Text>Tips: ${this.state.tip}</Text>
-              <Text>Food Tax: ${this.state.foodTax}</Text>
-              <Text>Delivery Tax: ${this.state.deliveryTax}</Text>
-              <Text style={styles.costTotal}>
-                Total: ${this.state.totalCost}
-              </Text>
-            </View>
-          </View>
+              <View style={{ marginTop: 0 }}>
+                <BuildingPicker
+                  deliveryLocation={this.state.deliveryLocation}
+                  clickHandler={this.handleBuildingSelection}
+                />
+                <FlatList
+                  data={this.props.cart.items}
+                  renderItem={({ item }) => <OrderMenuItem menuItem={item} />}
+                  keyExtractor={(item, index) => index.toString()}
+                />
 
-          <View style={styles.buttonView}>
-            <Button title="Place Order" onPress={this.handlePlaceOrder} />
-          </View>
-        </View>
+                <Button
+                  title="Clear Cart"
+                  type="clear"
+                  icon={<Icon name="md-trash" color="#e74c3c" type="ionicon" />}
+                  onPress={() => this.props.resetCart()}
+                  buttonStyle={{
+                    marginLeft: 120,
+                    marginRight: 120,
+                    padding: 5,
+                    borderColor: "#ff9287",
+                    borderWidth: 2
+                  }}
+                  titleStyle={{
+                    color: "#e74c3c"
+                  }}
+                />
+
+                <View style={{ margin: 10, marginTop: 50 }}>
+                  <Input
+                    onChangeText={this.handlerInstructionsTextBox}
+                    placeholder="Delivery Instructions? Room #?"
+                    leftIcon={{ type: "font-awesome", name: "chevron-right" }}
+                  />
+
+                  <View>
+                    <ButtonGroup
+                      onPress={this.tipBtnGroupHandler}
+                      selectedIndex={selectedTipBtnIndex}
+                      buttons={buttons}
+                      containerStyle={{ height: 30, margin: 20 }}
+                    />
+                  </View>
+
+                  {this.renderPayment()}
+
+                  <CostView costDetails={cost} />
+
+                  <View style={styles.buttonView}>
+                    <Button
+                      title="Place Order"
+                      onPress={this.handlePlaceOrder}
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </ThemeProvider>
       );
     } else {
       return (
-        <View style={styles.container}>
+        <View style={theme.container}>
           <Text h1 style={styles.textView}>
             Cart is Empty!
           </Text>
@@ -251,12 +380,20 @@ class BuildingPicker extends React.Component {
   }
   render() {
     return (
-      <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-        <Text style={{ fontSize: 20 }}>Your location: </Text>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 0,
+          margin: 10
+        }}
+      >
+        <Text>Your location: </Text>
 
         <Picker
           selectedValue={this.state.building}
-          style={{ height: 50, width: 300 }}
+          style={{ height: 50, width: 240 }}
           onValueChange={(itemValue, itemIndex) => {
             this.setState({ building: itemValue });
             this.props.clickHandler(itemValue);
@@ -316,22 +453,6 @@ export default connect(
 )(CartScreen);
 
 const styles = StyleSheet.create({
-  costTotal: {
-    fontSize: 14,
-    fontWeight: "bold"
-  },
-  costHeading: {
-    marginTop: 4,
-    fontSize: 24,
-    // fontWeight: 'bold',
-    textAlign: "center"
-  },
-  costContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginHorizontal: 8
-  },
-
   container: {
     flex: 1
   },
@@ -342,7 +463,7 @@ const styles = StyleSheet.create({
 
   buttonView: {
     flex: 1,
-    padding: 20,
+    padding: 0,
     justifyContent: "flex-end"
   },
 

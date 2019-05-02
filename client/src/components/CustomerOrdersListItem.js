@@ -1,37 +1,61 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { ListItem, Divider } from 'react-native-elements';
 
 export default class CustomerOrdersListItem extends React.Component {
   render() {
     const { order } = this.props;
 
     return (
-      <TouchableOpacity
-        style={styles.touchableContainer}
-        onPress={() => this.props.navigation.navigate('OrderStatus', order)}>
-        <View style={styles.card}>
-          <View style={styles.nameContainer}>
-            <Text style={styles.name}>{order.restaurant.name}</Text>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate('OrderStatus', order)}>
+        <ListItem
+          title={order.restaurant.name}
+          subtitle={
+            <View style={styles.nameContainer}>
+              <Text key={'1'} style={styles.subtitleBolded}>
+                {'Items:'}
+              </Text>
 
-            <Text style={styles.subtitleBolded}>{'Items:'}</Text>
-            {order.items.map((item, key) => {
-              return (
-                <Text style={styles.subtitle} key={key}>
-                  {'- ' + item.itemName}
-                </Text>
-              );
-            })}
+              {order.items.map((item, key) => {
+                return (
+                  <Text style={styles.subtitle} key={key}>
+                    {'- ' + item.itemName}
+                  </Text>
+                );
+              })}
 
-            <Text style={styles.subtitleBolded}>{'Total cost: $' + order.costs.total}</Text>
-          </View>
-          <View style={styles.imageContainer}>
-            <Image style={styles.image} source={{ uri: order.restaurant.thumbnail }} />
-          </View>
-        </View>
+              <Text key={'2'} style={styles.subtitleBolded}>
+                {'Total cost: $' + order.costs.total}
+              </Text>
+            </View>
+          }
+          leftAvatar={{ source: { uri: order.restaurant.thumbnail } }}
+        />
+        <Divider />
       </TouchableOpacity>
     );
   }
 }
+
+// <View style={styles.card}>
+//   <View style={styles.nameContainer}>
+//     <Text style={styles.name}>{order.restaurant.name}</Text>
+//
+//     <Text style={styles.subtitleBolded}>{'Items:'}</Text>
+//     {order.items.map((item, key) => {
+//       return (
+//         <Text style={styles.subtitle} key={key}>
+//           {'- ' + item.itemName}
+//         </Text>
+//       );
+//     })}
+//
+//     <Text style={styles.subtitleBolded}>{'Total cost: $' + order.costs.total}</Text>
+//   </View>
+//   <View style={styles.imageContainer}>
+//     <Image style={styles.image} source={{ uri: order.restaurant.thumbnail }} />
+//   </View>
+// </View>
 
 const styles = StyleSheet.create({
   card: {

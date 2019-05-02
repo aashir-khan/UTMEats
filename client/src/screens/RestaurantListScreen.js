@@ -1,16 +1,48 @@
-import React, { Component } from 'react';
-import { StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
-import { ListItem, Divider } from 'react-native-elements';
-import axios from 'axios';
-import theme from '../theme/Theme';
-import { Spinner } from '../components/common';
+import React, { Component } from "react";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ScrollView
+} from "react-native";
+import {
+  ListItem,
+  Divider,
+  Button,
+  Icon,
+  ThemeProvider
+} from "react-native-elements";
+import axios from "axios";
+import theme from "../theme/Theme";
+import { Spinner } from "../components/common";
 
 export default class RestaurantListScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Restaurants',
-    headerTitleStyle: theme.Header.headerTitleStyle,
-    headerTintColor: theme.Header.headerTintColor,
-    headerStyle: theme.Header.headerStyle
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: "Restaurants",
+      headerTitleStyle: theme.Header.headerTitleStyle,
+      headerTintColor: theme.Header.headerTintColor,
+      headerStyle: theme.Header.headerStyle,
+
+      headerRight: (
+        <Button
+          icon={
+            <Icon
+              name="md-cart"
+              type="ionicon"
+              color={theme.Header.headerTintColor}
+            />
+          }
+          type="clear"
+          iconRight
+          onPress={() => {
+            const { navigate } = navigation;
+            navigate("Cart", {});
+          }}
+        />
+      )
+    };
   };
 
   constructor(props) {
@@ -29,9 +61,12 @@ export default class RestaurantListScreen extends React.Component {
     try {
       this.setState({ loading: true });
       const restaurantAllResponse = await axios.get(
-        'https://utmeats.herokuapp.com/restaurants/getAll'
+        "https://utmeats.herokuapp.com/restaurants/getAll"
       );
-      this.setState({ loading: false, restaurants: restaurantAllResponse.data });
+      this.setState({
+        loading: false,
+        restaurants: restaurantAllResponse.data
+      });
     } catch (err) {
       console.log(err);
       return;
@@ -48,56 +83,24 @@ export default class RestaurantListScreen extends React.Component {
     const { navigate } = this.props.navigation;
 
     return (
-      <ScrollView>
+      <ThemeProvider theme={theme}>
         <FlatList
-          style={{ padding: 15 }}
           data={this.state.restaurants}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => navigate('Menu', { restaurant: item })}>
+            <TouchableOpacity
+              onPress={() => navigate("Menu", { restaurant: item })}
+            >
               <ListItem
                 title={item.name}
-                titleStyle={{ fontSize: 18, fontWeight: 'bold' }}
                 subtitle={item.description}
-                leftAvatar={{
-                  rounded: false,
-                  size: 'large',
-                  source: { uri: item.thumbnail },
-                  style: {
-                    width: 80,
-                    height: 80,
-                    backgroundColor: 'rgba(0,0,0,0)'
-                  },
-                  overlayContainerStyle: {
-                    backgroundColor: 'rgba(0,0,0,0)'
-                  },
-                  avatarStyle: {
-                    borderRadius: 15
-                  }
-                }}
+                leftAvatar={{ source: { uri: item.thumbnail } }}
               />
-              <Divider style={{ backgroundColor: 'rgba(0,0,0,0.2)', marginTop: 10 }} />
+              <Divider />
             </TouchableOpacity>
           )}
           keyExtractor={(item, index) => index.toString()}
         />
-      </ScrollView>
+      </ThemeProvider>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 20
-  },
-  heading: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  flatlist: {
-    flexDirection: 'column',
-    justifyContent: 'flex-start'
-  },
-  flatview: {}
-});

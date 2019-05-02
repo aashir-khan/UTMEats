@@ -6,14 +6,11 @@ import RadioGroupComponent from './RadioGroup';
 import SpecialInstructionsInputBox from './SpecialInstructionsInputBox';
 
 import { connect } from 'react-redux';
-import {  initializeItem, setQuantity, addItemToCart } from '../actions';
+import { initializeItem, setQuantity, addItemToCart } from '../actions';
 
 class SingleItemList extends React.Component {
   componentDidMount() {
     const itemSelected = this.props.itemSelected;
-
-  
-    
 
     //fill in the item info
     const item = this.filterItemInfo(itemSelected);
@@ -128,7 +125,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10
   },
   sectionHeader: {
-    backgroundColor: '#efefef',
+    backgroundColor: 'rgba(0,0,0,0.05)',
     paddingHorizontal: 20,
     paddingVertical: 10
   }

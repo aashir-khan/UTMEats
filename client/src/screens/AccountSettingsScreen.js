@@ -132,7 +132,7 @@ export default class ProfileScreen extends React.Component {
     return (
       <ThemeProvider theme={theme}>
         <KeyboardAwareScrollView>
-          <View style={styles.container}>
+          <View style={theme.container}>
             {this.renderRating()}
             <Input
               placeholder="user@gmail.com"
@@ -162,14 +162,7 @@ export default class ProfileScreen extends React.Component {
               onChangeText={lastName => this.setState({ lastName })}
             />
 
-            <Input
-              label="Date of Birth"
-              placeholder=""
-              inputContainerStyle={{ display: 'none' }}
-              secureTextEntry={true}
-              value={this.state.password}
-              onChangeText={password => this.setState({ password })}
-            />
+            <Input label="Date of Birth" inputContainerStyle={{ display: 'none' }} />
 
             <DatePicker
               date={this.state.dateOfBirth}
@@ -180,23 +173,8 @@ export default class ProfileScreen extends React.Component {
               minDate="1900-01-01"
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
-              customStyles={{
-                dateInput: {
-                  borderColor: 'rgba(0,0,0,0)',
-                  shadowColor: 'rgba(0,0,0,0)',
-                  alignItems: 'flex-start'
-                },
-                dateText: {
-                  fontSize: 16,
-                  marginLeft: 5,
-                  color: 'rgba(0,0,0,0.35)'
-                },
-                placeholderText: {
-                  fontSize: 16,
-                  marginLeft: 5,
-                  color: 'rgba(0,0,0,0.35)'
-                }
-              }}
+              style={theme.datePicker}
+              customStyles={theme.datePickerCustom}
               showIcon={true}
               onDateChange={dateOfBirth => this.setState({ dateOfBirth })}
             />
@@ -213,15 +191,5 @@ const styles = StyleSheet.create({
   container: {
     padding: 50,
     paddingTop: 20
-  },
-  datePicker: {
-    width: 170,
-    padding: 10,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
-    borderColor: 'rgba(0,0,0,.1)',
-    shadowColor: 'rgba(0,0,0,0)'
   }
 });
