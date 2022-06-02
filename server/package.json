@@ -14,7 +14,7 @@
     "express": "^4.16.4",
     "firebase-admin": "^7.0.0",
     "moment": "^2.24.0",
-    "protobufjs": "^6.8.8",
+    "protobufjs": "^6.11.3",
     "shortid": "^2.2.14",
     "stripe": "^6.24.0"
   }
