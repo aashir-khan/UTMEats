@@ -12,7 +12,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "firebase-admin": "^7.0.0",
+    "firebase-admin": "^11.4.1",
     "moment": "^2.24.0",
     "protobufjs": "^6.8.8",
     "shortid": "^2.2.14",
